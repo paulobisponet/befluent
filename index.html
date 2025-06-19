@@ -1,0 +1,1613 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BeFluent - Desvendando o Verbo To Be</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&family=Chewy&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+
+    <style>
+        :root {
+            --primary-color: #2E8B57; /* Verde Escuro (Sea Green) */
+            --secondary-color: #FFB300; /* Amarelo Vibrante (mantido para destaques) */
+            --accent-color: #4CAF50; /* Verde para sucesso */
+            --error-color: #d32f2f; /* Vermelho para erro */
+            --background-color: #f0fff0; /* Branco Esverdeado muito claro */
+            --text-color: #333;
+            --card-bg: #ffffff;
+            --shadow-color: rgba(0, 0, 0, 0.1);
+            --button-hover: #3CB371; /* Verde mais claro para hover */
+            --quiz-correct-bg: #e6ffe6;
+            --quiz-incorrect-bg: #ffe6e6;
+            --drag-drop-border: #2E8B57; /* Borda dos drop zones no novo verde */
+            --drag-item-color: #FFB300; /* Laranja para itens arrastáveis */
+        }
+
+        body {
+            font-family: 'Poppins', sans-serif;
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            background-color: var(--background-color);
+            color: var(--text-color);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        #app-container {
+            background-color: #fff;
+            border-radius: 20px;
+            box-shadow: 0 10px 30px var(--shadow-color);
+            width: 90%;
+            max-width: 900px;
+            padding: 20px;
+            text-align: center;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .screen {
+            display: none;
+            animation: fadeIn 0.5s ease-in-out;
+            padding: 20px;
+        }
+
+        .screen.active {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        h1, h2, h3 {
+            font-family: 'Chewy', cursive;
+            color: var(--primary-color);
+            margin-bottom: 20px;
+        }
+
+        .app-title {
+            font-size: 3.5em;
+            color: var(--primary-color);
+            text-shadow: 3px 3px var(--secondary-color);
+            margin-bottom: 10px;
+        }
+
+        .municipal-identity {
+            font-size: 1.1em;
+            color: var(--primary-color);
+            font-weight: bold;
+            margin-bottom: 20px;
+        }
+
+        .impact-phrase {
+            font-size: 1.2em;
+            color: var(--text-color);
+            font-style: italic;
+            margin-bottom: 30px;
+        }
+
+        .teacher-avatar {
+            margin-bottom: 30px;
+        }
+
+        .teacher-avatar i {
+            font-size: 100px;
+            color: var(--primary-color);
+            background-color: var(--secondary-color);
+            border-radius: 50%;
+            padding: 20px;
+            margin-bottom: 10px;
+        }
+
+        .teacher-info p {
+            margin: 5px 0;
+            font-size: 1.1em;
+            color: var(--text-color);
+        }
+
+        .teacher-info .discipline {
+            font-size: 0.9em;
+            color: #666;
+        }
+
+        .input-group {
+            margin-bottom: 20px;
+            text-align: left;
+            max-width: 300px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .input-group label {
+            display: block;
+            font-weight: bold;
+            margin-bottom: 5px;
+            color: var(--primary-color);
+        }
+
+        .input-group input,
+        .input-group select {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid var(--primary-color);
+            border-radius: 8px;
+            font-size: 1em;
+            color: var(--text-color);
+            background-color: #f9f9f9;
+        }
+
+        .input-group input::placeholder {
+            color: #aaa;
+        }
+
+        .main-button {
+            background-color: var(--primary-color);
+            color: white;
+            padding: 15px 30px;
+            border: none;
+            border-radius: 10px;
+            font-size: 1.2em;
+            font-weight: bold;
+            cursor: pointer;
+            transition: background-color 0.3s ease, transform 0.2s ease;
+            box-shadow: 0 4px 8px var(--shadow-color);
+            margin-top: 20px;
+        }
+
+        .main-button:hover {
+            background-color: var(--button-hover);
+            transform: translateY(-2px);
+        }
+
+        .back-to-modules {
+            background-color: transparent;
+            color: var(--primary-color);
+            border: 2px solid var(--primary-color);
+            padding: 10px 15px;
+            border-radius: 8px;
+            font-size: 1em;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 20px;
+            width: fit-content;
+        }
+
+        .back-to-modules:hover {
+            background-color: var(--primary-color);
+            color: white;
+        }
+
+        .header-bar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+
+        .header-bar p {
+            font-size: 1.1em;
+            font-weight: bold;
+            color: var(--primary-color);
+            flex-grow: 1;
+            text-align: left;
+        }
+
+        .progress-area {
+            display: flex;
+            flex-direction: column;
+            align-items: flex-end;
+            gap: 5px;
+        }
+
+        #completed-modules-count {
+            font-size: 0.9em;
+            color: #666;
+        }
+
+        .progress-bar-container {
+            width: 200px;
+            height: 15px;
+            background-color: #e0e0e0;
+            border-radius: 10px;
+            overflow: hidden;
+        }
+
+        .progress-bar {
+            height: 100%;
+            width: 0%;
+            background-color: var(--accent-color);
+            border-radius: 10px;
+            transition: width 0.5s ease-in-out;
+        }
+
+        .modules-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+            gap: 25px;
+            margin-top: 40px;
+        }
+
+        .module-card {
+            background-color: var(--card-bg);
+            border-radius: 15px;
+            padding: 25px;
+            box-shadow: 0 5px 15px var(--shadow-color);
+            cursor: pointer;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 180px;
+        }
+
+        .module-card.completed {
+            border: 3px solid var(--primary-color);
+            box-shadow: 0 5px 20px rgba(46, 139, 87, 0.2);
+        }
+
+        .module-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
+        }
+
+        .module-card .module-icon-display {
+            font-size: 3.5em;
+            color: var(--secondary-color);
+            margin-bottom: 15px;
+        }
+
+        .module-card h3 {
+            font-size: 1.3em;
+            margin: 0;
+            color: var(--primary-color);
+        }
+
+        .module-detail-screen {
+            text-align: left;
+        }
+
+        .module-detail-screen h2 {
+            text-align: center;
+            margin-bottom: 25px;
+        }
+
+        .module-content p {
+            font-size: 1.1em;
+            line-height: 1.6;
+            margin-bottom: 15px;
+        }
+
+        .module-content ul {
+            list-style: none;
+            padding: 0;
+            margin-bottom: 20px;
+        }
+
+        .module-content ul li {
+            background-color: #f0f0f0;
+            padding: 10px 15px;
+            border-left: 5px solid var(--secondary-color);
+            margin-bottom: 8px;
+            border-radius: 5px;
+        }
+
+        .content-illustration-placeholder {
+            width: 80%;
+            height: 150px;
+            background-color: #eee;
+            border-radius: 10px;
+            margin: 20px auto;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 1.5em;
+            font-weight: bold;
+            color: #666;
+            box-shadow: 0 5px 15px var(--shadow-color);
+        }
+
+        .quiz-section, .activity-section {
+            background-color: #fefefe;
+            border: 1px solid #eee;
+            border-radius: 10px;
+            padding: 25px;
+            margin-top: 30px;
+            box-shadow: 0 3px 10px rgba(0, 0, 0, 0.05);
+        }
+
+        .quiz-section h3, .activity-section h3 {
+            color: var(--primary-color);
+            margin-bottom: 20px;
+            text-align: center;
+        }
+
+        .question {
+            margin-bottom: 20px;
+            text-align: left;
+        }
+
+        .question p {
+            font-weight: bold;
+            font-size: 1.1em;
+            margin-bottom: 10px;
+            color: var(--primary-color);
+        }
+
+        .options label {
+            display: block;
+            background-color: #f9f9f9;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            padding: 12px 15px;
+            margin-bottom: 10px;
+            cursor: pointer;
+            transition: background-color 0.2s ease, border-color 0.2s ease;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .options label:hover {
+            background-color: #e8e8e8;
+            border-color: var(--primary-color);
+        }
+
+        .options input[type="radio"] {
+            margin-right: 10px;
+            transform: scale(1.2);
+        }
+
+        .options label.correct-answer {
+            background-color: var(--quiz-correct-bg);
+            border-color: var(--accent-color);
+            font-weight: bold;
+        }
+
+        .options label.incorrect-answer {
+            background-color: var(--quiz-incorrect-bg);
+            border-color: var(--error-color);
+            font-weight: bold;
+        }
+
+        .submit-quiz-btn, .check-activity-btn {
+            background-color: var(--accent-color);
+            color: white;
+            padding: 12px 25px;
+            border: none;
+            border-radius: 8px;
+            font-size: 1em;
+            font-weight: bold;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+            margin-top: 20px;
+        }
+
+        .submit-quiz-btn:hover, .check-activity-btn:hover {
+            background-color: #388e3c;
+        }
+
+        .quiz-result, .activity-feedback {
+            margin-top: 25px;
+            font-size: 1.2em;
+            font-weight: bold;
+        }
+
+        .quiz-result.success, .activity-feedback.success {
+            color: var(--accent-color);
+        }
+
+        .quiz-result.fail, .activity-feedback.fail {
+            color: var(--error-color);
+        }
+
+        .feedback-emoji {
+            font-size: 1.5em;
+            margin-left: 10px;
+        }
+
+        .drag-drop-area {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 20px;
+            margin-top: 20px;
+            min-height: 200px;
+            align-items: flex-start;
+        }
+
+        .drag-item {
+            background-color: var(--drag-item-color);
+            color: white;
+            padding: 10px 20px;
+            border-radius: 8px;
+            cursor: grab;
+            font-weight: bold;
+            box-shadow: 0 2px 5px var(--shadow-color);
+            transition: transform 0.2s ease, box-shadow 0.2s ease, opacity 0.2s ease;
+            z-index: 10;
+        }
+
+        .drag-item:active {
+            cursor: grabbing;
+            transform: scale(1.05);
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+        }
+
+        .drag-item.hidden {
+            opacity: 0;
+        }
+
+        .drop-zone {
+            border: 3px dashed var(--drag-drop-border);
+            border-radius: 10px;
+            min-width: 150px;
+            min-height: 120px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            padding: 15px;
+            background-color: #f5f0fb;
+            font-weight: bold;
+            color: var(--primary-color);
+            font-size: 1.1em;
+            flex-grow: 1;
+            position: relative;
+        }
+
+        .drop-zone.drag-over {
+            background-color: #e0cffc;
+            border-color: var(--secondary-color);
+        }
+
+        .drop-zone .drag-item {
+            margin: 5px;
+            cursor: default;
+        }
+
+        .fonemas-activity-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+            gap: 20px;
+            margin-top: 20px;
+        }
+
+        .word-count-card {
+            background-color: #fff;
+            border: 1px solid #ddd;
+            border-radius: 10px;
+            padding: 15px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 10px;
+            box-shadow: 0 2px 5px var(--shadow-color);
+        }
+
+        .word-to-count {
+            font-size: 1.5em;
+            font-weight: bold;
+            color: var(--primary-color);
+            margin-bottom: 5px;
+        }
+
+        .drop-target-for-count {
+            border: 2px dashed var(--drag-drop-border);
+            border-radius: 50%;
+            width: 70px;
+            height: 70px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 1.8em;
+            font-weight: bold;
+            color: #666;
+            background-color: #f0f0f0;
+            transition: background-color 0.2s ease, border-color 0.2s ease;
+        }
+
+        .drop-target-for-count.drag-over {
+            background-color: #e0cffc;
+            border-color: var(--secondary-color);
+        }
+
+        .number-drag-item {
+            background-color: var(--secondary-color);
+            color: white;
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 1.5em;
+            font-weight: bold;
+            cursor: grab;
+            box-shadow: 0 2px 5px var(--shadow-color);
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+        }
+
+        .number-drag-item:active {
+            cursor: grabbing;
+            transform: scale(1.1);
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+        }
+
+        .number-palette {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            margin-top: 20px;
+            padding: 15px;
+            background-color: #fefefe;
+            border-radius: 10px;
+            box-shadow: inset 0 0 5px rgba(0,0,0,0.1);
+        }
+
+        .highlight-activity-words {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 15px;
+            margin-top: 20px;
+        }
+
+        .highlight-word-container {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            background-color: #f0f0f0;
+            padding: 15px 10px;
+            border-radius: 10px;
+            font-size: 1.5em;
+            font-weight: bold;
+            color: var(--primary-color);
+            box-shadow: 0 2px 5px var(--shadow-color);
+        }
+
+        .highlight-char {
+            padding: 2px 1px;
+            cursor: pointer;
+            border-bottom: 2px solid transparent;
+            transition: background-color 0.2s ease, border-color 0.2s ease;
+        }
+
+        .highlight-char.selectable:hover {
+            background-color: rgba(255, 179, 0, 0.3);
+        }
+
+        .highlight-char.selected {
+            background-color: var(--secondary-color);
+            color: white;
+            border-color: var(--primary-color);
+            border-radius: 3px;
+        }
+
+        .highlight-char.correct {
+            background-color: var(--accent-color);
+            color: white;
+            border-color: darkgreen;
+            border-radius: 3px;
+        }
+
+        .highlight-char.incorrect {
+            background-color: var(--error-color);
+            color: white;
+            border-color: darkred;
+            border-radius: 3px;
+        }
+
+        #report-section {
+            padding: 30px;
+        }
+
+        #performance-report-content {
+            background-color: #f9f9f9;
+            border: 1px solid #eee;
+            border-radius: 10px;
+            padding: 20px;
+            margin-bottom: 30px;
+            text-align: left;
+        }
+
+        #performance-report-content h3 {
+            color: var(--primary-color);
+            margin-top: 0;
+        }
+
+        #performance-report-content p {
+            font-size: 1.1em;
+            margin-bottom: 10px;
+        }
+
+        #performance-report-content ul {
+            list-style: none;
+            padding: 0;
+        }
+
+        #performance-report-content ul li {
+            padding: 8px 0;
+            border-bottom: 1px dashed #eee;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        #performance-report-content ul li:last-child {
+            border-bottom: none;
+        }
+
+        .report-actions {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            margin-top: 20px;
+        }
+
+        .view-report-button {
+            margin-top: 30px;
+        }
+
+        @media (max-width: 768px) {
+            .app-title { font-size: 2.5em; }
+            .modules-grid { grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 15px; }
+            .module-card { padding: 20px; min-height: 150px; }
+            .module-card .module-icon-display { font-size: 2.5em; }
+            .module-card h3 { font-size: 1.1em; }
+            .input-group input, .input-group select, .main-button { font-size: 1em; padding: 12px 20px; }
+            .header-bar { flex-direction: column; align-items: flex-start; gap: 10px; }
+            .progress-area { align-items: flex-start; width: 100%; }
+            .progress-bar-container { width: 100%; margin-top: 5px; }
+            .drag-drop-area { flex-direction: column; align-items: center; }
+            .drop-zone { min-width: unset; width: 80%; }
+            .report-actions { flex-direction: column; }
+        }
+
+        @media (max-width: 480px) {
+            #app-container { width: 95%; padding: 15px; }
+            .app-title { font-size: 2em; }
+            .impact-phrase { font-size: 1em; }
+            .teacher-avatar i { font-size: 80px; padding: 15px; }
+            .modules-grid { grid-template-columns: 1fr; }
+            .highlight-word-container { font-size: 1.2em; padding: 10px 5px; }
+        }
+    </style>
+</head>
+<body>
+    <div id="app-container">
+        <div id="initial-screen" class="screen active">
+            <h1 class="app-title">BeFluent</h1>
+            <p class="municipal-identity">Secretaria de Educação do Município de Água Preta</p>
+            <p class="impact-phrase">“Educar com amor, inovar com paixão”</p>
+            <div class="teacher-avatar">
+                <i class="fas fa-chalkboard-teacher"></i> <div class="teacher-info">
+                    <p>Professor: Paulo Bispo</p>
+                    <p class="discipline">Disciplina: Língua Portuguesa e Inglesa</p>
+                </div>
+            </div>
+            <div class="input-group">
+                <label for="student-name">Seu Nome:</label>
+                <input type="text" id="student-name" placeholder="Digite seu nome" required>
+            </div>
+            <div class="input-group">
+                <label for="student-school">Nome da Escola:</label>
+                <input type="text" id="student-school" placeholder="Ex: E.M. Água Viva" required>
+            </div>
+            <div class="input-group">
+                <label for="student-grade">Série:</label>
+                <select id="student-grade" required>
+                    <option value="">Selecione sua série</option>
+                    <option value="6">6º Ano</option>
+                    <option value="7">7º Ano</option>
+                    <option value="8">8º Ano</option>
+                    <option value="9">9º Ano</option>
+                </select>
+            </div>
+            <div class="input-group">
+                <label for="student-class">Turma:</label>
+                <input type="text" id="student-class" placeholder="Ex: Turma A ou 7B" required>
+            </div>
+            <button id="start-learning-btn" class="main-button">Começar Jornada</button>
+        </div>
+
+        <div id="modules-screen" class="screen">
+            <div class="header-bar">
+                <p>Olá, <span id="display-student-name"></span>!</p>
+                <div class="progress-area">
+                    <span id="completed-modules-count">0/5 Módulos</span>
+                    <div class="progress-bar-container">
+                        <div class="progress-bar" id="learning-progress-bar"></div>
+                    </div>
+                </div>
+            </div>
+            <div class="modules-grid" id="modules-grid-container">
+                </div>
+            <button id="view-report-btn" class="main-button view-report-button" style="display: none;">Ver Relatório de Desempenho</button>
+        </div>
+
+        <div id="module-detail-container">
+            </div>
+
+        <div id="report-section" class="screen">
+            <h2>Relatório de Desempenho</h2>
+            <div id="performance-report-content">
+                </div>
+            <div class="report-actions">
+                <p>Para salvar o relatório, use a função de print da tela do seu navegador (Ctrl+P ou Cmd+P).</p>
+            </div>
+            <button class="main-button" onclick="location.reload()">Recomeçar Jornada</button>
+        </div>
+
+    </div>
+
+    <script>
+        const appContent = {
+            modules: [
+                {
+                    id: 'o-que-e',
+                    name: 'O Que É o "To Be"?',
+                    icon: 'fas fa-question-circle', // Ícone Font Awesome
+                    illustrationText: 'Ser ou Estar?', // Texto para placeholder da ilustração
+                    illustrationColor: '#ADD8E6', // Cor para o placeholder
+                    description: `
+                        <p>O <strong>Verbo To Be</strong> é um dos verbos mais importantes em inglês! Ele significa "ser" ou "estar" em português.</p>
+                        <p>É usado para falar sobre:</p>
+                        <ul>
+                            <li><strong>Identidade ou Ocupação:</strong> Eu sou um estudante.</li>
+                            <li><strong>Características:</strong> Ela é feliz.</li>
+                            <li><strong>Localização:</strong> Eles estão em casa.</li>
+                            <li><strong>Idade:</strong> Ele tem 10 anos (literalmente, ele "é" 10 anos velho).</li>
+                            <li><strong>Emoções/Condições:</strong> Você está cansado.</li>
+                        </ul>
+                        <p>Ele muda de forma dependendo do sujeito da frase. Vamos aprender cada uma!</p>
+                    `,
+                    quiz: [
+                        {
+                            question: "O verbo 'to be' pode significar:",
+                            options: ["Comer ou Beber", "Fazer ou Ir", "Ser ou Estar", "Ter ou Haver"],
+                            answer: "Ser ou Estar"
+                        },
+                        {
+                            question: "Qual frase em português traduz 'She is happy'?",
+                            options: ["Ela come feliz", "Ela está feliz", "Ela quer feliz", "Ela gosta de feliz"],
+                            answer: "Ela está feliz"
+                        },
+                        {
+                            question: "Quando usamos 'to be' para falar da idade de alguém, ele significa:",
+                            options: ["Ter", "Ser", "Estar", "Fazer"],
+                            answer: "Ser"
+                        },
+                        {
+                            question: "Assinale a opção em que o 'to be' indica localização:",
+                            options: ["I am a teacher.", "They are sad.", "We are in Brazil.", "He is tall."],
+                            answer: "We are in Brazil."
+                        },
+                        {
+                            question: "Qual das palavras abaixo não é uma forma do verbo 'to be'?",
+                            options: ["am", "are", "is", "have"],
+                            answer: "have"
+                        }
+                    ],
+                    activity: {
+                        type: 'match-translation',
+                        description: "Arraste as frases em português para suas traduções corretas em inglês.",
+                        items: [
+                            { pt: "Eu sou um estudante.", en: "I am a student." },
+                            { pt: "Ela está feliz.", en: "She is happy." },
+                            { pt: "Eles estão em casa.", en: "They are at home." },
+                            { pt: "Nós somos amigos.", en: "We are friends." }
+                        ]
+                    }
+                },
+                {
+                    id: 'afirmativa',
+                    name: 'Forma Afirmativa',
+                    icon: 'fas fa-check-circle',
+                    illustrationText: 'Afirmando com o To Be',
+                    illustrationColor: '#FFD700',
+                    description: `
+                        <p>Na forma afirmativa, o Verbo To Be tem 3 formas principais: <strong>am</strong>, <strong>is</strong>, <strong>are</strong>.</p>
+                        <p>Ele sempre combina com o sujeito (quem faz a ação ou de quem se fala).</p>
+                        <h3>Conjugação Principal:</h3>
+                        <ul>
+                            <li><strong>I + am</strong> (Eu sou/estou)</li>
+                            <li><strong>You + are</strong> (Você/Vocês é/são/está/estão)</li>
+                            <li><strong>He/She/It + is</strong> (Ele/Ela/Isso é/está)</li>
+                            <li><strong>We + are</strong> (Nós somos/estamos)</li>
+                            <li><strong>They + are</strong> (Eles/Elas são/estão)</li>
+                        </ul>
+                        <h3>Contrações (Formas Curtas):</h3>
+                        <p>Para falar mais rápido, usamos contrações:</p>
+                        <ul>
+                            <li>I am = <strong>I'm</strong></li>
+                            <li>You are = <strong>You're</strong></li>
+                            <li>He is = <strong>He's</strong></li>
+                            <li>She is = <strong>She's</strong></li>
+                            <li>It is = <strong>It's</strong></li>
+                            <li>We are = <strong>We're</strong></li>
+                            <li>They are = <strong>They're</strong></li>
+                        </ul>
+                    `,
+                    quiz: [
+                        {
+                            question: "Complete: 'I ___ a student.'",
+                            options: ["is", "are", "am", "be"],
+                            answer: "am"
+                        },
+                        {
+                            question: "Qual a forma contraída de 'She is'?",
+                            options: ["She'are", "She's", "She'am", "She is'nt"],
+                            answer: "She's"
+                        },
+                        {
+                            question: "Complete: 'They ___ from Brazil.'",
+                            options: ["is", "am", "are", "be"],
+                            answer: "are"
+                        },
+                        {
+                            question: "A frase 'It is a cat.' se refere a:",
+                            options: ["Eu sou um gato.", "Nós somos um gato.", "Isso é um gato.", "Você é um gato."],
+                            answer: "Isso é um gato."
+                        },
+                        {
+                            question: "Qual forma do 'to be' é usada com 'We'?",
+                            options: ["am", "is", "are", "be"],
+                            answer: "are"
+                        }
+                    ],
+                    activity: {
+                        type: 'fill-in-the-blank',
+                        description: "Complete as frases com a forma correta (am, is, are).",
+                        sentences: [
+                            { text: "He ___ a doctor.", correct: "is" },
+                            { text: "We ___ happy.", correct: "are" },
+                            { text: "I ___ eleven years old.", correct: "am" },
+                            { text: "You ___ a good friend.", correct: "are" },
+                            { text: "It ___ cold today.", correct: "is" }
+                        ]
+                    }
+                },
+                {
+                    id: 'negativa',
+                    name: 'Forma Negativa',
+                    icon: 'fas fa-times-circle',
+                    illustrationText: 'Não sendo / não estando',
+                    illustrationColor: '#FFA07A',
+                    description: `
+                        <p>Para transformar uma frase afirmativa com o Verbo To Be em negativa, é simples: basta adicionar a palavra <strong>NOT</strong> depois do am, is ou are.</p>
+                        <h3>Estrutura:</h3>
+                        <p><strong>Sujeito + (am/is/are) + NOT + Complemento</strong></p>
+                        <ul>
+                            <li>I am not happy. (Eu não estou feliz.)</li>
+                            <li>You are not tall. (Você não é alto.)</li>
+                            <li>He is not a teacher. (Ele não é um professor.)</li>
+                        </ul>
+                        <h3>Contrações Negativas (Formas Curtas):</h3>
+                        <p>As contrações são muito comuns na fala do dia a dia:</p>
+                        <ul>
+                            <li>is + not = <strong>isn't</strong></li>
+                            <li>are + not = <strong>aren't</strong></li>
+                            <li>(Atenção: 'am not' não tem uma contração comum como 'amn't'. Geralmente fica 'I'm not')</li>
+                        </ul>
+                    `,
+                    quiz: [
+                        {
+                            question: "Transforme 'She is a student.' para a negativa:",
+                            options: ["She not is a student.", "She isn't a student.", "She aren't a student.", "She am not a student."],
+                            answer: "She isn't a student."
+                        },
+                        {
+                            question: "Qual a forma contraída de 'are not'?",
+                            options: ["am not", "is not", "aren't", "isn't"],
+                            answer: "aren't"
+                        },
+                        {
+                            question: "Complete a frase negativa: 'We ___ ___ ready.'",
+                            options: ["is not", "am not", "are not", "are not't"],
+                            answer: "are not"
+                        },
+                        {
+                            question: "A contração 'isn't' é usada para:",
+                            options: ["I am not", "You are not", "He is not", "We are not"],
+                            answer: "He is not"
+                        },
+                        {
+                            question: "Qual a forma mais comum de dizer 'Eu não estou'?",
+                            options: ["I am not", "I amn't", "I aren't", "I'm not"],
+                            answer: "I'm not"
+                        }
+                    ],
+                    activity: {
+                        type: 'transform-sentence',
+                        description: "Transforme as frases afirmativas em negativas (use contrações se possível).",
+                        sentences: [
+                            { affirmative: "She is tired.", negative: ["She isn't tired.", "She is not tired."] },
+                            { affirmative: "They are in the park.", negative: ["They aren't in the park.", "They are not in the park."] },
+                            { affirmative: "I am hungry.", negative: ["I'm not hungry.", "I am not hungry."] },
+                            { affirmative: "He is a good student.", negative: ["He isn't a good student.", "He is not a good student."] }
+                        ]
+                    }
+                },
+                {
+                    id: 'interrogativa',
+                    name: 'Forma Interrogativa',
+                    icon: 'fas fa-question',
+                    illustrationText: 'Fazendo Perguntas com To Be',
+                    illustrationColor: '#98FB98',
+                    description: `
+                        <p>Para fazer perguntas com o Verbo To Be, você precisa <strong>inverter</strong> a ordem do sujeito e do verbo.</p>
+                        <h3>Estrutura:</h3>
+                        <p><strong>(Am/Is/Are) + Sujeito + Complemento?</strong></p>
+                        <ul>
+                            <li>Am I late? (Eu estou atrasado?)</li>
+                            <li>Are you a student? (Você é um estudante?)</li>
+                            <li>Is he happy? (Ele está feliz?)</li>
+                            <li>Are we friends? (Nós somos amigos?)</li>
+                            <li>Are they ready? (Eles estão prontos?)</li>
+                        </ul>
+                        <h3>Respostas Curtas:</h3>
+                        <p>Para responder a essas perguntas de forma curta, usamos "Yes" ou "No" + o sujeito (pronome) + a forma correta do to be (afirmativa ou negativa).</p>
+                        <ul>
+                            <li>Is she tired? Yes, she is. / No, she isn't.</li>
+                            <li>Are you from Brazil? Yes, I am. / No, I'm not.</li>
+                        </ul>
+                    `,
+                    quiz: [
+                        {
+                            question: "Transforme 'You are a teacher.' para a interrogativa:",
+                            options: ["Are you a teacher?", "You are a teacher?", "Is you a teacher?", "Am you a teacher?"],
+                            answer: "Are you a teacher?"
+                        },
+                        {
+                            question: "A resposta curta correta para 'Is he Brazilian?' é:",
+                            options: ["Yes, he are.", "No, he not.", "Yes, he is.", "Yes, he's."],
+                            answer: "Yes, he is."
+                        },
+                        {
+                            question: "Complete a pergunta: '___ they at home?'",
+                            options: ["Is", "Am", "Are", "Be"],
+                            answer: "Are"
+                        },
+                        {
+                            question: "Qual a pergunta correta para 'Sim, eu sou feliz.'?",
+                            options: ["Are you happy?", "Is you happy?", "Am I happy?", "Are I happy?"],
+                            answer: "Are you happy?"
+                        },
+                        {
+                            question: "Qual das opções é uma pergunta INCORRETA?",
+                            options: ["Are we ready?", "Is it a dog?", "Am you right?", "Are they busy?"],
+                            answer: "Am you right?"
+                        }
+                    ],
+                    activity: {
+                        type: 'order-words-to-question',
+                        description: "Ordene as palavras para formar perguntas corretas com 'To Be'.",
+                        questions: [
+                            { words: ["student?", "a", "you", "Are"], correct: "Are you a student?" },
+                            { words: ["she", "tired?", "Is"], correct: "Is she tired?" },
+                            { words: ["they", "home?", "at", "Are"], correct: "Are they at home?" },
+                            { words: ["he", "from", "Brazil?", "Is"], correct: "Is he from Brazil?" }
+                        ]
+                    }
+                },
+                {
+                    id: 'contexto-geral',
+                    name: 'Respostas Curtas e Contexto Geral',
+                    icon: 'fas fa-comments',
+                    illustrationText: 'To Be no Dia a Dia',
+                    illustrationColor: '#FFC0CB',
+                    description: `
+                        <p>Agora que você conhece as formas afirmativa, negativa e interrogativa, vamos praticar as <strong>respostas curtas</strong> e usar o Verbo To Be em diferentes situações do dia a dia!</p>
+                        <h3>Respostas Curtas (Revisão):</h3>
+                        <ul>
+                            <li><strong>Yes, I am.</strong> / No, I'm not.</li>
+                            <li><strong>Yes, you are.</strong> / No, you aren't.</li>
+                            <li><strong>Yes, he is.</strong> / No, he isn't.</li>
+                            <li><strong>Yes, she is.</strong> / No, she isn't.</li>
+                            <li><strong>Yes, it is.</strong> / No, it isn't.</li>
+                            <li><strong>Yes, we are.</strong> / No, we aren't.</li>
+                            <li><strong>Yes, they are.</strong> / No, they aren't.</li>
+                        </ul>
+                        <h3>Uso em Contexto:</h3>
+                        <p>O Verbo To Be é muito versátil. Ele é usado para: identidade, características, localização, idade, emoções, profissões, nacionalidades e muito mais!</p>
+                        <ul>
+                            <li><strong>I am a doctor.</strong> (Profissão)</li>
+                            <li><strong>She is from Canada.</strong> (Nacionalidade/Origem)</li>
+                            <li><strong>They are happy.</strong> (Emoção)</li>
+                            <li><strong>It is 3 o'clock.</strong> (Hora)</li>
+                        </ul>
+                    `,
+                    quiz: [
+                        {
+                            question: "Qual a resposta curta correta para 'Are you a student?' se a resposta for sim?",
+                            options: ["Yes, I am.", "Yes, I'm.", "Yes, you are.", "Yes, I are."],
+                            answer: "Yes, I am."
+                        },
+                        {
+                            question: "Se a resposta para 'Is he tired?' for negativa, qual a forma correta?",
+                            options: ["No, he not.", "No, he isn't.", "No, he are not.", "No, he is not."],
+                            answer: "No, he isn't."
+                        },
+                        {
+                            question: "Qual das frases está gramaticalmente CORRETA?",
+                            options: ["She am pretty.", "You is tired.", "We are friends.", "I are a boy."],
+                            answer: "We are friends."
+                        },
+                        {
+                            question: "Qual a pergunta que corresponde à resposta 'Yes, they are in the garden.'?",
+                            options: ["Are they in the garden?", "Is they in the garden?", "Do they in the garden?", "Where are they in the garden?"],
+                            answer: "Are they in the garden?"
+                        },
+                        {
+                            question: "Complete o diálogo: '___ you from Brazil?' 'Yes, I ___.'",
+                            options: ["Are / am", "Is / am", "Are / are", "Am / am"],
+                            answer: "Are / am"
+                        }
+                    ],
+                    activity: {
+                        type: 'dialog-choice',
+                        description: "Escolha a melhor resposta com o 'To Be' para cada diálogo.",
+                        dialogs: [
+                            {
+                                prompt: "Hi, I'm Mike. Are you new here?",
+                                choices: [
+                                    { text: "Yes, I am.", correct: true },
+                                    { text: "Yes, I is.", correct: false },
+                                    { text: "No, I not.", correct: false }
+                                ]
+                            },
+                            {
+                                prompt: "Is your teacher a man?",
+                                choices: [
+                                    { text: "No, she isn't.", correct: true },
+                                    { text: "No, she aren't.", correct: false },
+                                    { text: "Yes, he is.", correct: false }
+                                ]
+                            },
+                            {
+                                prompt: "Are they happy about the test results?",
+                                choices: [
+                                    { text: "Yes, they is.", correct: false },
+                                    { text: "No, they aren't.", correct: true },
+                                    { text: "Yes, they am.", correct: false }
+                                ]
+                            }
+                        ]
+                    }
+                }
+            ]
+        };
+
+        document.addEventListener('DOMContentLoaded', () => {
+            const initialScreen = document.getElementById('initial-screen');
+            const modulesScreen = document.getElementById('modules-screen');
+            const startLearningBtn = document.getElementById('start-learning-btn');
+            const studentNameInput = document.getElementById('student-name');
+            const studentSchoolInput = document.getElementById('student-school'); // NOVO
+            const studentGradeSelect = document.getElementById('student-grade');
+            const studentClassInput = document.getElementById('student-class');   // NOVO
+            const displayStudentName = document.getElementById('display-student-name');
+            const modulesGridContainer = document.getElementById('modules-grid-container');
+            const moduleDetailContainer = document.getElementById('module-detail-container');
+            const progressBar = document.getElementById('learning-progress-bar');
+            const completedModulesCountSpan = document.getElementById('completed-modules-count');
+            const reportSection = document.getElementById('report-section');
+            const viewReportBtn = document.getElementById('view-report-btn');
+
+            let studentData = {
+                name: '',
+                school: '', // NOVO
+                grade: '',
+                class: '',   // NOVO
+                completedModules: new Set(),
+                quizScores: {},
+                activityScores: {}
+            };
+
+            const totalModules = appContent.modules.length;
+
+            function showScreen(screenId) {
+                document.querySelectorAll('.screen').forEach(screen => {
+                    screen.classList.remove('active');
+                });
+                document.getElementById(screenId).classList.add('active');
+            }
+
+            function updateProgressBar() {
+                const progress = (studentData.completedModules.size / totalModules) * 100;
+                progressBar.style.width = `${progress}%`;
+                completedModulesCountSpan.textContent = `${studentData.completedModules.size}/${totalModules} Módulos`;
+
+                if (studentData.completedModules.size === totalModules) {
+                    viewReportBtn.style.display = 'block';
+                } else {
+                    viewReportBtn.style.display = 'none';
+                }
+
+                appContent.modules.forEach(module => {
+                    const card = document.querySelector(`.module-card[data-module-id="${module.id}"]`);
+                    if (card) {
+                        if (studentData.completedModules.has(module.id)) {
+                            card.classList.add('completed');
+                        } else {
+                            card.classList.remove('completed');
+                        }
+                    }
+                });
+            }
+
+            function renderModuleCards() {
+                modulesGridContainer.innerHTML = '';
+                appContent.modules.forEach(module => {
+                    const moduleCard = document.createElement('div');
+                    moduleCard.classList.add('module-card');
+                    moduleCard.dataset.moduleId = module.id;
+                    if (studentData.completedModules.has(module.id)) {
+                        card.classList.add('completed');
+                    }
+                    moduleCard.innerHTML = `
+                        <i class="${module.icon} module-icon-display"></i>
+                        <h3>${module.name}</h3>
+                    `;
+                    moduleCard.addEventListener('click', () => renderModuleDetail(module.id));
+                    modulesGridContainer.appendChild(moduleCard);
+                });
+            }
+
+            function renderModuleDetail(moduleId) {
+                const module = appContent.modules.find(m => m.id === moduleId);
+                if (!module) return;
+
+                moduleDetailContainer.innerHTML = `
+                    <div id="module-${module.id}" class="screen module-detail-screen active">
+                        <button class="back-to-modules"><i class="fas fa-arrow-left"></i> Voltar aos Módulos</button>
+                        <h2>${module.name}</h2>
+                        <div class="module-content">
+                            ${module.description}
+                            <div class="content-illustration-placeholder" style="background-color: ${module.illustrationColor};">${module.illustrationText}</div>
+
+                            <div class="quiz-section">
+                                <h3>Quiz de ${module.name}</h3>
+                                <div class="question-container" id="quiz-${module.id}"></div>
+                                <button class="submit-quiz-btn" data-module-id="${module.id}">Ver Resultado</button>
+                                <div class="quiz-result" id="result-${module.id}"></div>
+                            </div>
+
+                            <div class="activity-section">
+                                <h3>Atividade: ${module.activity.description}</h3>
+                                <div class="activity-container" id="activity-${module.id}"></div>
+                                <button class="check-activity-btn" data-module-id="${module.id}">Verificar Atividade</button>
+                                <div class="activity-feedback" id="feedback-${module.id}"></div>
+                            </div>
+                        </div>
+                    </div>
+                `;
+                showScreen(`module-${module.id}`);
+                setupModuleListeners(module.id);
+            }
+
+            function setupModuleListeners(moduleId) {
+                document.querySelector(`#module-${moduleId} .back-to-modules`).addEventListener('click', () => {
+                    showScreen('modules-screen');
+                    updateProgressBar();
+                });
+
+                loadQuiz(moduleId);
+                document.querySelector(`#module-${moduleId} .submit-quiz-btn`).addEventListener('click', () => submitQuiz(moduleId));
+
+                loadActivity(moduleId);
+                document.querySelector(`#module-${moduleId} .check-activity-btn`).addEventListener('click', () => checkActivity(moduleId));
+            }
+
+            function loadQuiz(moduleId) {
+                const quizContainer = document.getElementById(`quiz-${moduleId}`);
+                quizContainer.innerHTML = '';
+                const quizData = appContent.modules.find(m => m.id === moduleId).quiz;
+
+                quizData.forEach((q, index) => {
+                    const questionDiv = document.createElement('div');
+                    questionDiv.classList.add('question');
+                    questionDiv.innerHTML = `<p>${index + 1}. ${q.question}</p><div class="options"></div>`;
+
+                    const optionsDiv = questionDiv.querySelector('.options');
+                    q.options.forEach(option => {
+                        const label = document.createElement('label');
+                        label.innerHTML = `<input type="radio" name="question-${moduleId}-${index}" value="${option}"> ${option}`;
+                        optionsDiv.appendChild(label);
+                    });
+                    quizContainer.appendChild(questionDiv);
+                });
+                document.getElementById(`result-${moduleId}`).textContent = '';
+            }
+
+            function submitQuiz(moduleId) {
+                const quizContainer = document.getElementById(`quiz-${moduleId}`);
+                const resultDisplay = document.getElementById(`result-${moduleId}`);
+                const questions = appContent.modules.find(m => m.id === moduleId).quiz;
+                let correctAnswers = 0;
+
+                questions.forEach((q, index) => {
+                    const selectedOption = quizContainer.querySelector(`input[name="question-${moduleId}-${index}"]:checked`);
+                    const allOptions = quizContainer.querySelectorAll(`input[name="question-${moduleId}-${index}"]`);
+
+                    allOptions.forEach(input => {
+                        const label = input.closest('label');
+                        label.classList.remove('correct-answer', 'incorrect-answer');
+                        if (input.value === q.answer) {
+                            label.classList.add('correct-answer');
+                        }
+                        if (selectedOption && selectedOption.value === input.value && selectedOption.value !== q.answer) {
+                            label.classList.add('incorrect-answer');
+                        }
+                    });
+
+                    if (selectedOption && selectedOption.value === q.answer) {
+                        correctAnswers++;
+                    }
+                });
+
+                const score = (correctAnswers / questions.length) * 100;
+                studentData.quizScores[moduleId] = score;
+
+                let feedback = '';
+                let emoji = '';
+                if (score === 100) {
+                    feedback = 'Parabéns! Você acertou tudo!';
+                    emoji = '🎉';
+                } else if (score >= 70) {
+                    feedback = 'Muito bom! Continue praticando.';
+                    emoji = '👍';
+                } else {
+                    feedback = 'Você pode melhorar! Revise o conteúdo.';
+                    emoji = '😅';
+                }
+
+                resultDisplay.innerHTML = `Sua pontuação: ${score.toFixed(0)}% (${correctAnswers}/${questions.length}) <span class="feedback-emoji">${emoji}</span><br>${feedback}`;
+                resultDisplay.classList.toggle('success', score >= 70);
+                resultDisplay.classList.toggle('fail', score < 70);
+
+                if (score >= 70) {
+                    studentData.completedModules.add(moduleId);
+                    updateProgressBar();
+                }
+            }
+
+            function loadActivity(moduleId) {
+                const activityContainer = document.getElementById(`activity-${moduleId}`);
+                activityContainer.innerHTML = '';
+                const activityData = appContent.modules.find(m => m.id === moduleId).activity;
+                const feedbackDisplay = document.getElementById(`feedback-${moduleId}`);
+                feedbackDisplay.textContent = '';
+                feedbackDisplay.classList.remove('success', 'fail');
+
+                if (activityData.type === 'match-translation') {
+                    const itemsHtml = activityData.items.map(item => `
+                        <div class="drag-item" draggable="true" data-en="${item.en}">${item.pt}</div>
+                    `).join('');
+                    const dropZonesHtml = activityData.items.map(item => `
+                        <div class="drop-zone" data-en-target="${item.en}">${item.en}</div>
+                    `).join('');
+
+                    activityContainer.innerHTML = `
+                        <div class="drag-drop-area items-to-drag">${itemsHtml}</div>
+                        <div class="drag-drop-area drop-targets">${dropZonesHtml}</div>
+                    `;
+                    setupMatchTranslationActivity(moduleId);
+
+                } else if (activityData.type === 'fill-in-the-blank') {
+                    const sentencesHtml = activityData.sentences.map((s, index) => `
+                        <p>${s.text.replace('___', `<input type="text" class="blank-input" data-index="${index}" placeholder="___">`)}</p>
+                    `).join('');
+                    activityContainer.innerHTML = `<div>${sentencesHtml}</div>`;
+                    setupFillInTheBlankActivity(moduleId);
+
+                } else if (activityData.type === 'transform-sentence') {
+                    const sentencesHtml = activityData.sentences.map((s, index) => `
+                        <p>Afirmativa: <strong>${s.affirmative}</strong></p>
+                        <p>Negativa: <input type="text" class="transform-input" data-index="${index}" placeholder="Digite a frase negativa"></p>
+                    `).join('');
+                    activityContainer.innerHTML = `<div>${sentencesHtml}</div>`;
+                    setupTransformSentenceActivity(moduleId);
+
+                } else if (activityData.type === 'order-words-to-question') {
+                    const questionsHtml = activityData.questions.map((q, index) => {
+                        const shuffledWords = q.words.sort(() => Math.random() - 0.5); // Embaralha as palavras
+                        return `
+                            <div class="word-order-question" data-index="${index}">
+                                <p>Ordene as palavras para formar a pergunta:</p>
+                                <div class="words-to-order drag-drop-area">${shuffledWords.map(word => `<div class="drag-item" draggable="true" data-word="${word}">${word}</div>`).join('')}</div>
+                                <div class="ordered-words drop-zone">Arraste as palavras aqui</div>
+                            </div>
+                        `;
+                    }).join('');
+                    activityContainer.innerHTML = `<div>${questionsHtml}</div>`;
+                    setupOrderWordsActivity(moduleId);
+
+                } else if (activityData.type === 'dialog-choice') {
+                    const dialogsHtml = activityData.dialogs.map((dialog, index) => `
+                        <div class="dialog-prompt">
+                            <p><strong>${dialog.prompt}</strong></p>
+                            <div class="dialog-choices" data-dialog-index="${index}">
+                                ${dialog.choices.map((choice, choiceIndex) => `
+                                    <label><input type="radio" name="dialog-choice-${index}" value="${choiceIndex}"> ${choice.text}</label>
+                                `).join('')}
+                            </div>
+                        </div>
+                    `).join('');
+                    activityContainer.innerHTML = `<div>${dialogsHtml}</div>`;
+                }
+            }
+
+
+            function checkActivity(moduleId) {
+                const activityData = appContent.modules.find(m => m.id === moduleId).activity;
+                const feedbackDisplay = document.getElementById(`feedback-${moduleId}`);
+                let isCorrect = true;
+
+                if (activityData.type === 'match-translation') {
+                    activityData.items.forEach(item => {
+                        const dropZone = document.querySelector(`.drop-zone[data-en-target="${item.en}"]`);
+                        const droppedItem = dropZone ? dropZone.querySelector('.drag-item') : null;
+                        if (!droppedItem || droppedItem.dataset.en !== item.en) {
+                            isCorrect = false;
+                        }
+                    });
+                } else if (activityData.type === 'fill-in-the-blank') {
+                    document.querySelectorAll(`#activity-${moduleId} .blank-input`).forEach((input, index) => {
+                        const correct = activityData.sentences[index].correct.toLowerCase();
+                        if (input.value.trim().toLowerCase() !== correct) {
+                            isCorrect = false;
+                        }
+                    });
+                } else if (activityData.type === 'transform-sentence') {
+                    document.querySelectorAll(`#activity-${moduleId} .transform-input`).forEach((input, index) => {
+                        const correctOptions = activityData.sentences[index].negative.map(s => s.trim().toLowerCase());
+                        if (!correctOptions.includes(input.value.trim().toLowerCase())) {
+                            isCorrect = false;
+                        }
+                    });
+                } else if (activityData.type === 'order-words-to-question') {
+                    document.querySelectorAll(`#activity-${moduleId} .word-order-question`).forEach((questionDiv, index) => {
+                        const orderedWordsContainer = questionDiv.querySelector('.ordered-words');
+                        const droppedWords = Array.from(orderedWordsContainer.querySelectorAll('.drag-item')).map(item => item.dataset.word);
+                        const correctSentence = activityData.questions[index].correct;
+                        if (droppedWords.join(' ') !== correctSentence) {
+                            isCorrect = false;
+                        }
+                    });
+                } else if (activityData.type === 'dialog-choice') {
+                    activityData.dialogs.forEach((dialog, index) => {
+                        const selectedChoice = document.querySelector(`input[name="dialog-choice-${index}"]:checked`);
+                        // A LÓGICA DEVERIA ESTAR CORRETA. VOU ADICIONAR UM CONSOLE.LOG PARA AJUDAR A DEPURAR.
+                        if (!selectedChoice) {
+                            isCorrect = false;
+                            console.log(`Dialog ${index}: Nenhuma opção selecionada.`);
+                            return;
+                        }
+                        const chosenOptionIndex = parseInt(selectedChoice.value);
+                        const isChosenCorrect = dialog.choices[chosenOptionIndex].correct;
+
+                        console.log(`Dialog ${index}: Chosen index: ${chosenOptionIndex}, Is Correct: ${isChosenCorrect}`);
+
+                        if (!isChosenCorrect) { // Se a opção escolhida NÃO for a correta
+                            isCorrect = false;
+                        }
+                    });
+                }
+
+                if (isCorrect) {
+                    feedbackDisplay.textContent = 'Atividade Correta! 🎉';
+                    feedbackDisplay.classList.add('success');
+                    feedbackDisplay.classList.remove('fail');
+                    studentData.activityScores[moduleId] = true;
+                } else {
+                    feedbackDisplay.textContent = 'Ops! Tente novamente. Revise o conteúdo.';
+                    feedbackDisplay.classList.add('fail');
+                    feedbackDisplay.classList.remove('success');
+                    studentData.activityScores[moduleId] = false;
+                }
+            }
+
+
+            function setupMatchTranslationActivity(moduleId) {
+                const dragItems = document.querySelectorAll(`#activity-${moduleId} .drag-item`);
+                const dropZones = document.querySelectorAll(`#activity-${moduleId} .drop-zone`);
+                const initialContainer = document.querySelector(`#activity-${moduleId} .items-to-drag`);
+                let currentDraggedItem = null;
+
+                dragItems.forEach(item => {
+                    item.addEventListener('dragstart', (e) => {
+                        currentDraggedItem = item;
+                        e.dataTransfer.setData('text/plain', item.dataset.en);
+                        setTimeout(() => item.classList.add('hidden'), 0);
+                    });
+                    item.addEventListener('dragend', () => {
+                        if (currentDraggedItem) currentDraggedItem.classList.remove('hidden');
+                        currentDraggedItem = null;
+                    });
+                });
+
+                dropZones.forEach(zone => {
+                    zone.addEventListener('dragover', (e) => e.preventDefault());
+                    zone.addEventListener('dragenter', (e) => {
+                        e.preventDefault();
+                        zone.classList.add('drag-over');
+                    });
+                    zone.addEventListener('dragleave', () => zone.classList.remove('drag-over'));
+                    zone.addEventListener('drop', (e) => {
+                        e.preventDefault();
+                        zone.classList.remove('drag-over');
+                        const droppedItemEN = e.dataTransfer.getData('text/plain');
+
+                        if (currentDraggedItem && currentDraggedItem.dataset.en === zone.dataset.enTarget) {
+                            if (zone.children.length > 0) {
+                                initialContainer.appendChild(zone.children[0]);
+                            }
+                            zone.appendChild(currentDraggedItem);
+                        } else if (currentDraggedItem) {
+                             initialContainer.appendChild(currentDraggedItem);
+                        }
+                    });
+                });
+                initialContainer.addEventListener('dragover', (e) => e.preventDefault());
+                initialContainer.addEventListener('dragenter', (e) => e.preventDefault());
+                initialContainer.addEventListener('dragleave', () => {});
+                initialContainer.addEventListener('drop', (e) => {
+                    e.preventDefault();
+                    if (currentDraggedItem) {
+                        initialContainer.appendChild(currentDraggedItem);
+                    }
+                });
+            }
+
+            function setupFillInTheBlankActivity(moduleId) {
+                // No need for complex event setup here, validation happens in checkActivity
+            }
+
+            function setupTransformSentenceActivity(moduleId) {
+                // No need for complex event setup here
+            }
+
+            function setupOrderWordsActivity(moduleId) {
+                 const dragItems = document.querySelectorAll(`#activity-${moduleId} .word-order-question .drag-item`);
+                 const dropZones = document.querySelectorAll(`#activity-${moduleId} .word-order-question .drop-zone`);
+                 let currentDraggedItem = null;
+
+                dragItems.forEach(item => {
+                    item.addEventListener('dragstart', (e) => {
+                        currentDraggedItem = item;
+                        e.dataTransfer.setData('text/plain', item.dataset.word);
+                        setTimeout(() => item.classList.add('hidden'), 0);
+                    });
+                    item.addEventListener('dragend', () => {
+                        if (currentDraggedItem) currentDraggedItem.classList.remove('hidden');
+                        currentDraggedItem = null;
+                    });
+                });
+
+                dropZones.forEach(zone => {
+                    zone.addEventListener('dragover', (e) => {
+                        e.preventDefault();
+                        const dropRect = zone.getBoundingClientRect();
+                        const draggedOverEl = e.target.closest('.drag-item');
+
+                        if (draggedOverEl && zone.contains(draggedOverEl)) {
+                            const center = (dropRect.left + dropRect.right) / 2;
+                            if (e.clientX < center) {
+                                zone.insertBefore(currentDraggedItem, draggedOverEl);
+                            } else {
+                                zone.insertBefore(currentDraggedItem, draggedOverEl.nextSibling);
+                            }
+                        } else {
+                            if (!zone.querySelector('.drag-item[data-word="' + currentDraggedItem.dataset.word + '"]')) {
+                                zone.appendChild(currentDraggedItem);
+                            }
+                        }
+                    });
+                    zone.addEventListener('dragenter', (e) => {
+                        e.preventDefault();
+                        zone.classList.add('drag-over');
+                    });
+                    zone.addEventListener('dragleave', () => zone.classList.remove('drag-over'));
+                    zone.addEventListener('drop', (e) => {
+                        e.preventDefault();
+                        zone.classList.remove('drag-over');
+                        if (!zone.querySelector('.drag-item[data-word="' + currentDraggedItem.dataset.word + '"]')) {
+                            if (currentDraggedItem) {
+                                zone.appendChild(currentDraggedItem);
+                            }
+                        }
+                    });
+                });
+                document.querySelectorAll(`#activity-${moduleId} .words-to-order`).forEach(wordContainer => {
+                    wordContainer.addEventListener('dragover', (e) => e.preventDefault());
+                    wordContainer.addEventListener('dragenter', (e) => e.preventDefault());
+                    wordContainer.addEventListener('dragleave', () => {});
+                    wordContainer.addEventListener('drop', (e) => {
+                        e.preventDefault();
+                        if (currentDraggedItem && !wordContainer.querySelector('.drag-item[data-word="' + currentDraggedItem.dataset.word + '"]')) {
+                            wordContainer.appendChild(currentDraggedItem);
+                        }
+                    });
+                });
+            }
+
+
+            function generateReport() {
+                const reportContent = document.getElementById('performance-report-content');
+                reportContent.innerHTML = `
+                    <h3>Relatório de Desempenho - BeFluent</h3>
+                    <p><strong>Nome do Aluno:</strong> ${studentData.name}</p>
+                    <p><strong>Escola:</strong> ${studentData.school}</p>
+                    <p><strong>Série:</strong> ${studentData.grade}</p>
+                    <p><strong>Turma:</strong> ${studentData.class}</p>
+                    <p><strong>Módulos Concluídos:</strong> ${studentData.completedModules.size} de ${totalModules}</p>
+                    <h4>Resultados dos Quizzes:</h4>
+                    <ul>
+                        ${appContent.modules.map(module => `
+                            <li>
+                                <strong>${module.name}:</strong>
+                                ${studentData.quizScores[module.id] !== undefined
+                                    ? `${studentData.quizScores[module.id].toFixed(0)}% ${studentData.quizScores[module.id] >= 70 ? '✅' : '❌'}`
+                                    : 'Não realizado'}
+                            </li>
+                        `).join('')}
+                    </ul>
+                    <h4>Resultados das Atividades Práticas:</h4>
+                    <ul>
+                        ${appContent.modules.map(module => `
+                            <li>
+                                <strong>${module.name}:</strong>
+                                ${studentData.activityScores[module.id] !== undefined
+                                    ? (studentData.activityScores[module.id] ? 'Acertou ✅' : 'Errou ❌')
+                                    : 'Não realizada'}
+                            </li>
+                        `).join('')}
+                    </ul>
+                `;
+            }
+
+            startLearningBtn.addEventListener('click', () => {
+                const studentName = studentNameInput.value.trim();
+                const studentSchool = studentSchoolInput.value.trim();
+                const studentGrade = studentGradeSelect.value;
+                const studentClass = studentClassInput.value.trim();
+
+                if (studentName && studentSchool && studentGrade && studentClass) {
+                    studentData.name = studentName;
+                    studentData.school = studentSchool;
+                    studentData.grade = studentGrade;
+                    studentData.class = studentClass;
+                    displayStudentName.textContent = studentName;
+                    renderModuleCards();
+                    showScreen('modules-screen');
+                    updateProgressBar();
+                } else {
+                    alert('Por favor, preencha todos os campos para começar!');
+                }
+            });
+
+            viewReportBtn.addEventListener('click', () => {
+                generateReport();
+                showScreen('report-section');
+            });
+
+            updateProgressBar();
+        });
+    </script>
+</body>
+</html>
